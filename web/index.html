@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>可乐探针</title>
+    <title>Rnzmu探针</title>
 
 
     <!-- Fix chrome language detection -->
@@ -31,7 +31,7 @@
                     <div class="container">
                         <header>
                             <h1>
-                                <strong>APTX探针</strong>
+                                <strong>Rnzmu探针</strong>
                             </h1>
                         </header>
                         <div>
@@ -71,7 +71,101 @@
 				<tbody id="servers" style="text-align:center;">
 				<!-- Servers here \o/ -->
 				</tbody>
+			</table><!DOCTYPE html>
+<html>
+	<head>
+		<title>Rnzmu探针</title>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="云监控">
+		<meta name="author" content="BotoX">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="css/light.css">
+	</head>
+	<body>
+        <section id="content" style="text-align: center;">
+                <!-- Content Row -->
+                <section class="background">
+                    <div class="container">
+                        <header>
+                            <h1>
+                                <strong>初雲服務監控</strong>
+                            </h1>
+                        </header>
+                        <div>
+                            <p>
+                                <small>狀態更新和事件報告可能會延遲最多30分鐘<br />具體取決於手頭的技術問題。請向下滾動查看過去的事件報告.</small>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+        </section>
+		
+		<div class="container content">
+			<div id="loading-notice">
+				<noscript>
+					<div class="alert alert-danger" style="text-align: center;">
+						<strong>Enable JavaScript</strong> you fucking autist neckbeard, it's not gonna hurt you.
+					</div>
+				</noscript>
+				<div class="progress progress-striped active">
+					<div class="progress-bar progress-bar-warning" style="width: 100%;">加载中...</div>
+				</div>
+				<div style="text-align: center;">
+					如果出现此消息，请确保您已启用Javascript! <br />否则云监控主服务(服务端) 未启动或已关闭.
+				</div>
+				<p></p>
+			</div>
+					<div class="path-announcement navbar navbar-default navbar-fixed-top">
+            <div class="path-announcement2 container">
+             <span class="r">总下行速度：
+				<strong id="download_sum">0</strong></span>
+				<span class="r">总上行速度：
+				<strong id="upload_sum">0</strong></span>
+			<span class="r">下行流量：
+				<strong id="download_transfer_sum">0</strong></span>
+				<span class="r">上行流量：
+				<strong id="upload_transfer_sum">0</strong></span>
+                <p><i class="fa fa-volume-down"></i>已设计多线路自动负载均衡</p>
+            </div>
+        </div>
+			<table class="table table-striped table-condensed table-hover">
+				
+				<thead>
+					
+				<tr>
+					<th id="status4" style="text-align: center;">当前状态</th>
+					<th id="name">节点</th>
+                    <th id="type">IP地址</th>
+					<th id="location">流媒体解锁</th>
+					<th id="uptime">在线时间</th>
+					<th id="load">HC</th>
+					<th id="network">网速 ↓|↑</th>
+					<th id="traffic">流量 ↓|↑</th>
+					<th id="cpu">CPU</th>
+					<th id="ram">内存</th>
+					<th id="hdd">硬盘</th>
+				</tr>
+				</thead>
+				<tbody id="servers">
+				<!-- Servers here \o/ -->
+				</tbody>
 			</table>
+			<br />
+			<div id="updated" style="margin-left: 5px;">Updating...</div>
+		</div>
+
+		<div class="container">
+			<p style="text-align: center; font-size: 10px;"><a target="_parent"href="https://rnzmu.cn/">返回 Rnzmu'Blog </a> 
+		</div>
+		<script src="js/jquery-1.10.2.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/serverstatus.js"></script>
+	</body>
+</html>
+
   			
 			<br />
 			<div id="updated" style="margin-left: 5px;">Updating...</div>
