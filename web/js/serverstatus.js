@@ -73,61 +73,14 @@ function bytesToSize(bytes, precision, si)
 
 function uptime() {
 	$.getJSON("json/stats.json", function(result) {
-      
-      var shstr = '<div class="col-lg-4 col-md-4 col-sm-4">'+
-                       ' <div class="panel panel-block panel-block-sm panel-location">'+
-                            '<div class="location-header">'+
-
-                               ' <h3 class="h4"><img src="img/clients/@region.png"> @name <small>@type</small></h3>'+
-                             '   <i class="zmdi zmdi-check-circle @online"></i>'+
-                         '   </div>'+
-                          '  <div class="location-progress">'+
-                          '      <div class="progress progress-sm">'+
-                             '       <div class="progress-bar" style="width: @load%;"></div>'+
-                             '   </div>'+
-                          '  </div>'+
-                           ' <ul class="location-info list-styled">'+
-                           '     <li><span class="list-label">Network @network_rxandnetwork_tx</li>'+
-                           '     <li><span class="list-label">负载状态:</span> @load%</li>'+
-                         '   </ul>'+
-                      '  </div>'+
-                   ' </div>';
-      
-      var shinnerhtml='';
-      
-      
 		$("#loading-notice").remove();
 		if(result.reload)
 			setTimeout(function() { location.reload(true) }, 1000);
-
+		var down_sum=0;
+		var up_sum=0;
+		var trans_in_sum=0;
+		var trans_out_sum=0;
 		for (var i = 0; i < result.servers.length; i++) {
-          
-          //----kaishi
-          
-          // Network
-				var newnetstr = "";
-				if(result.servers[i].network_rx < 1000)
-					newnetstr += result.servers[i].network_rx.toFixed(0) + "B";
-				else if(result.servers[i].network_rx < 1000*1000)
-					newnetstr += (result.servers[i].network_rx/1000).toFixed(0) + "K";
-				else
-					newnetstr += (result.servers[i].network_rx/1000/1000).toFixed(1) + "M";
-				newnetstr += " | "
-				if(result.servers[i].network_tx < 1000)
-					newnetstr += result.servers[i].network_tx.toFixed(0) + "B";
-				else if(result.servers[i].network_tx < 1000*1000)
-					newnetstr += (result.servers[i].network_tx/1000).toFixed(0) + "K";
-				else
-					newnetstr += (result.servers[i].network_tx/1000/1000).toFixed(1) + "M";
-          
-          shinnerhtml+=shstr.replace("@name",result.servers[i].name).replace("@network_rxandnetwork_tx",newnetstr).replace("@type",result.servers[i].type).replace("@online",result.servers[i].online4?'text-success':'text-error').replace("@location",result.servers[i].location).replace("@load",result.servers[i].load).replace("@load",result.servers[i].load).replace("@region",result.servers[i].region);
-          
-          
-          
-          //----jieshu
-          
-          
-          
 			var TableRow = $("#servers tr#r" + i);
 			var ExpandRow = $("#servers #rt" + i);
 			var hack; // fuck CSS for making me do this
@@ -168,10 +121,10 @@ function uptime() {
 			// Online4
 			if (result.servers[i].online4) {
 				TableRow.children["online4"].children[0].children[0].className = "progress-bar progress-bar-success";
-				TableRow.children["online4"].children[0].children[0].innerHTML = "<small>运行中</small>";
+				TableRow.children["online4"].children[0].children[0].innerHTML = "<small>开启</small>";
 			} else {
 				TableRow.children["online4"].children[0].children[0].className = "progress-bar progress-bar-danger";
-				TableRow.children["online4"].children[0].children[0].innerHTML = "<small>维护中</small>";
+				TableRow.children["online4"].children[0].children[0].innerHTML = "<small>关闭</small>";
 			}
 
 			// Online6
@@ -194,8 +147,6 @@ function uptime() {
 
 			// Location
 			TableRow.children["location"].innerHTML = result.servers[i].location;
-			//Region
-			//TableRow.children["region"].innerHTML = result.servers[i].region;
 			if (!result.servers[i].online4 && !result.servers[i].online6) {
 				if (server_status[i]) {
 					TableRow.children["uptime"].innerHTML = "–";
@@ -204,13 +155,13 @@ function uptime() {
 					TableRow.children["traffic"].innerHTML = "–";
 					TableRow.children["cpu"].children[0].children[0].className = "progress-bar progress-bar-danger";
 					TableRow.children["cpu"].children[0].children[0].style.width = "100%";
-					TableRow.children["cpu"].children[0].children[0].innerHTML = "<small>维护中</small>";
+					TableRow.children["cpu"].children[0].children[0].innerHTML = "<small>关闭</small>";
 					TableRow.children["memory"].children[0].children[0].className = "progress-bar progress-bar-danger";
 					TableRow.children["memory"].children[0].children[0].style.width = "100%";
-					TableRow.children["memory"].children[0].children[0].innerHTML = "<small>维护中</small>";
+					TableRow.children["memory"].children[0].children[0].innerHTML = "<small>关闭</small>";
 					TableRow.children["hdd"].children[0].children[0].className = "progress-bar progress-bar-danger";
 					TableRow.children["hdd"].children[0].children[0].style.width = "100%";
-					TableRow.children["hdd"].children[0].children[0].innerHTML = "<small>维护中</small>";
+					TableRow.children["hdd"].children[0].children[0].innerHTML = "<small>关闭</small>";
 					if(ExpandRow.hasClass("in")) {
 						ExpandRow.collapse("hide");
 					}
@@ -232,7 +183,10 @@ function uptime() {
 				} else {
 					TableRow.children["load"].innerHTML = result.servers[i].load;
 				}
-
+down_sum=down_sum+result.servers[i].network_rx;
+			up_sum=up_sum+result.servers[i].network_tx;
+			trans_in_sum=trans_in_sum+result.servers[i].network_in;
+			trans_out_sum=trans_out_sum+result.servers[i].network_out;
 				// Network
 				var netstr = "";
 				if(result.servers[i].network_rx < 1000)
@@ -319,8 +273,54 @@ function uptime() {
 				}
 			}
 		};
-      console.log(shinnerhtml);
-$('#cards').html(shinnerhtml);
+		var down_sumstr= ""
+				if(down_sum< 1024)
+					down_sumstr = down_sum.toFixed(0) + "B";
+				else if(down_sum< 1024*1024)
+					down_sumstr= (down_sum/1024).toFixed(0) + "K";
+				else if(down_sum < 1024*1024*1024)
+					down_sumstr= (down_sum/1024/1024).toFixed(1) + "M";
+				else if(down_sum< 1024*1024*1024*1024)
+					down_sumstr= (down_sum/1024/1024/1024).toFixed(2) + "G";
+				else
+					down_sumstr= (down_sum/1024/1024/1024/1024).toFixed(2) + "T";
+				var up_sumstr= ""
+				if(up_sum< 1024)
+					up_sumstr = up_sum.toFixed(0) + "B";
+				else if(up_sum< 1024*1024)
+					up_sumstr= (up_sum/1024).toFixed(0) + "K";
+				else if(up_sum < 1024*1024*1024)
+					up_sumstr= (up_sum/1024/1024).toFixed(1) + "M";
+				else if(up_sum< 1024*1024*1024*1024)
+					up_sumstr= (up_sum/1024/1024/1024).toFixed(2) + "G";
+				else
+					up_sumstr= (up_sum/1024/1024/1024/1024).toFixed(2) + "T";
+		var downtrans_sumstr= ""
+				if(trans_in_sum< 1024)
+					downtrans_sumstr = trans_in_sum.toFixed(0) + "B";
+				else if(trans_in_sum< 1024*1024)
+					downtrans_sumstr= (trans_in_sum/1024).toFixed(0) + "K";
+				else if(trans_in_sum< 1024*1024*1024)
+					downtrans_sumstr= (trans_in_sum/1024/1024).toFixed(1) + "M";
+				else if(trans_in_sum< 1024*1024*1024*1024)
+					downtrans_sumstr= (trans_in_sum/1024/1024/1024).toFixed(2) + "G";
+				else
+					downtrans_sumstr= (trans_in_sum/1024/1024/1024/1024).toFixed(2) + "T";
+				var uptrans_sumstr= ""
+				if(trans_out_sum< 1024)
+					uptrans_sumstr = trans_out_sum.toFixed(0) + "B";
+				else if(trans_out_sum< 1024*1024)
+					uptrans_sumstr= (trans_out_sum/1024).toFixed(0) + "K";
+				else if(trans_out_sum < 1024*1024*1024)
+					uptrans_sumstr= (trans_out_sum/1024/1024).toFixed(1) + "M";
+				else if(trans_out_sum< 1024*1024*1024*1024)
+					uptrans_sumstr= (trans_out_sum/1024/1024/1024).toFixed(2) + "G";
+				else
+					uptrans_sumstr= (trans_out_sum/1024/1024/1024/1024).toFixed(2) + "T";
+document.getElementById('download_sum').innerHTML=down_sumstr;
+document.getElementById('upload_sum').innerHTML=up_sumstr;
+document.getElementById('download_transfer_sum').innerHTML=downtrans_sumstr;
+document.getElementById('upload_transfer_sum').innerHTML=uptrans_sumstr;
 		d = new Date(result.updated*1000);
 		error = 0;
 	}).fail(function(update_error) {
